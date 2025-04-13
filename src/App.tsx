@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { QuestionScreen } from './components/QuestionScreen';
 import { FeedbackScreen } from './components/FeedbackScreen';
@@ -58,7 +59,7 @@ function App() {
   const fetchData = async () => {
     try {
       setLoading(true);           
-      const response = await fetch('https://raw.githubusercontent.com/Srinithi2905/Sentence-Construction/main/db.json');
+      const response = await fetch('http://localhost:3001/data');
 
       if (!response.ok) {
         throw new Error('Failed to fetch questions');
@@ -208,4 +209,3 @@ function App() {
 }
 
 export default App;
-
