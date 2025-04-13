@@ -58,7 +58,8 @@ function App() {
   const fetchData = async () => {
     try {
       setLoading(true);           
-      const response = await fetch('https://github.com/Srinithi2905/Sentence-Construction/main/db.json');
+      const response = await fetch('https://raw.githubusercontent.com/Srinithi2905/Sentence-Construction/main/db.json');
+
       if (!response.ok) {
         throw new Error('Failed to fetch questions');
       }
