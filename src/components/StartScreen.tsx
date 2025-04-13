@@ -1,6 +1,4 @@
 
-
-
 type StartScreenProps = {
   onStart: () => void;
   totalQuestions: number;

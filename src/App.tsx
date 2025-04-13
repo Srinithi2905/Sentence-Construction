@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from 'react';
 import { QuestionScreen } from './components/QuestionScreen';
 import { FeedbackScreen } from './components/FeedbackScreen';
 import { StartScreen } from './components/StartScreen';
 import './App.css';
+import rawQuizData from './data/quizData.json'; // Import JSON directly
 
 // Types based on your exact JSON structure
 export type QuestionData = {
@@ -37,6 +37,16 @@ export type ApiResponse = {
   activity: ActivityData;
 };
 
+// The structure in your actual JSON file
+type RawJsonData = {
+  data: {
+    status: string;
+    data: TestData;
+    message: string;
+    activity: ActivityData;
+  }
+};
+
 export type Answer = {
   questionId: string;
   userAnswers: string[];
@@ -53,33 +63,34 @@ function App() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+    // Load the data directly instead of fetching
     try {
-      setLoading(true);           
-      const response = await fetch('http://localhost:3001/data');
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch questions');
-      }
-      const apiResponse = await response.json();
+      setLoading(true);
       
-      if (apiResponse.status === 'SUCCESS') {
-        setApiData(apiResponse);
+      // Transform the raw data to match our ApiResponse type
+      const jsonData = rawQuizData as RawJsonData;
+      const transformedData: ApiResponse = {
+        status: jsonData.data.status,
+        data: jsonData.data.data,
+        message: jsonData.data.message,
+        activity: jsonData.data.activity
+      };
+      
+      if (transformedData.status === 'SUCCESS') {
+        setApiData(transformedData);
       } else {
-        throw new Error('API returned unsuccessful status');
+        throw new Error('Data has unsuccessful status');
       }
       
       setLoading(false);
     } catch (err) {
-      setError('Failed to load questions. Make sure your JSON server is running.');
+      setError('Failed to load questions. Data format may be incorrect.');
       setLoading(false);
       console.error(err);
     }
-  };
+  }, []);
 
+  // Rest of your component remains the same
   const handleStartGame = () => {
     setGameState('playing');
     setCurrentQuestionIndex(0);
@@ -140,8 +151,8 @@ function App() {
           <h2 className="text-2xl font-bold text-red-600 mb-4">Oops! Something went wrong</h2>
           <p className="text-gray-700 mb-6">{error}</p>
           <button 
-            onClick={() => fetchData()}
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300"
+            onClick={() => window.location.reload()}
           >
             Try Again
           </button>
@@ -158,8 +169,8 @@ function App() {
           <h2 className="text-2xl font-bold text-orange-600 mb-4">No Quiz Data Available</h2>
           <p className="text-gray-700 mb-6">We couldn't find any questions for this quiz.</p>
           <button 
-            onClick={() => fetchData()}
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors duration-300"
+            onClick={() => window.location.reload()}
           >
             Refresh
           </button>
